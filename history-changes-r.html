@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)https://etoro-px.s3-eu-west-1.amazonaws.com/loaders/historyChange -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+
+	
+		<style>
+			iframe {
+				width:1px;
+				height : 1px
+			}
+		</style>
+		<script async="" src="./gtm.js(1).download"></script><script>
+				(function () {
+                    //init
+					var urlParams = window.firstQuery = {};
+					var guid,
+					    match,
+						pl     = /\+/g,  // Regex for replacing addition symbol with a space
+						search = /([^&=]+)=?([^&]*)/g,
+						scriptRegex = /\<script/g,
+						decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+						parseObj = function(s){
+							if(typeof(s) === 'object')
+								return s;
+							var r = s;
+							try {
+								r = JSON.parse(r);
+							}catch(err){
+							}
+							return r
+						},
+						query  = window.location.search.substring(1);
+					while (match = search.exec(query))
+					   urlParams[decode(match[1])] = parseObj(decode(match[2]));
+
+				    guid = urlParams.guid || "";
+					//prepare
+					var windowParams = urlParams.windowParams;
+					if (windowParams){
+						for (var key in windowParams){
+							var value = windowParams[key];
+							if (!window[key]){
+								window[key] = value;
+							}
+						}
+					}
+						
+
+					if (urlParams.target){
+						saveHistory(urlParams.target);
+					}
+
+					var conversationGuid;
+
+					//load
+					var pixels = urlParams.pixels;
+					function renderScript(body , scriptText){
+						scriptText = scriptText.replace(/http:/gi, 'https:');
+
+						var iframe = document.createElement('iframe');
+
+						body.appendChild(iframe);
+						iframe.contentWindow.document.open();
+						iframe.contentWindow.document.write('<html><body>' + scriptText + '</body></html>');
+					}
+					function renderImage(body , imageUrl){
+						imageUrl = imageUrl.replace(/http:/gi, 'https:');
+						var img = document.createElement('img'),
+							iframe = document.createElement('iframe'),
+							imgRegex = /\<img/g;
+
+						img.onerror = function(){
+							window.parent.postMessage({type : "pixelsLoaderPixelFireError", pixel: imageUrl}, '*');
+						}
+
+						body.appendChild(iframe);
+						iframe.contentWindow.document.open();
+
+						if(imageUrl.match(imgRegex)){
+							iframe.contentWindow.document.write('<html><body>'+ imageUrl +'</body></html>');
+						}
+						else{
+							img.src = imageUrl;
+							iframe.contentWindow.document.write('<html><body></body></html>');
+							iframe.contentDocument.body.appendChild(img)
+						}	
+					}
+					function setPixelsType(pixels){
+						pixels.forEach(function(pixel, ind){
+							pixels[ind]['Type'] = pixel.Data.match(scriptRegex) ? 'JavaScript' : 'Image';
+						});
+					}
+
+
+					function loadPixelsList(pixels){
+						if(!pixels){
+							window.parent.postMessage({ type : "pixelsListIsEmpty" }, '*');
+						}
+						pixels = parseObj(pixels);
+						body = document.body;
+						if (body && pixels){
+							setPixelsType(pixels);
+                            for (var i = 0; i < pixels.length ; i++){
+                                    var pixel = pixels[i];
+									switch (pixel.Type) {
+										case 'JavaScript':
+										case 'Html':
+											renderScript(body, pixel.Data || "");
+											break;
+										default:
+										case 'Image':
+											renderImage(body, pixel.Data || "");
+											break;
+									}
+							}
+                        }
+							
+					}
+
+
+					window.loadPixels = function(){
+						loadPixelsList(pixels);
+					}
+					function addEvent(){
+						window[window.attachEvent ? 'attachEvent' : 'addEventListener'].apply(this,arguments);
+					}
+					function saveHistory(url){
+						if(history && history.replaceState){
+							history.replaceState(null, null, url);
+						}else if (location && location.hash){
+							location.hash = "#" + url;
+						}
+					}
+                    function isOriginValid(origin){
+                        if (!origin || origin=="file://")
+                            return true;
+                        if (/etoro\.com$/.test(origin))
+                            return true;
+                        if (/etoro\.com\.cn$/.test(origin))
+                            return true;
+                    }
+					function onMessage(event){
+						if (!event.data)return;
+                        if (!isOriginValid(event.origin))return
+                        
+						var data = parseObj(event.data);
+						switch (data.type){
+							case "pixels":
+                                conversationGuid = data.guid;
+								window.parent.postMessage({
+									type : "pixelsLoaderAccepted" + conversationGuid
+                                }, '*');
+								loadPixelsList(data.pixels);
+								break;
+							case "historyChange":
+								if(data.path)
+									saveHistory(data.path);
+							break;
+
+						}
+					}
+					addEvent('onmessage' , onMessage);
+					addEvent('message' , onMessage);
+
+					window.parent.postMessage({
+							type : "pixelsLoaderReady" + guid
+						}, '*');
+
+				})();
+		</script>
+			<!-- Google Tag Manager -->
+				<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-3BVS"
+				height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+				<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+				new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+				j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+				'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+				})(window,document,'script','dataLayer','GTM-3BVS');</script>
+			<!-- End Google Tag Manager -->
+				</head>
+	<body onload="loadPixels()">
+	
+<script type="text/javascript" id="">(function(){var b=document.referrer,c=/etoro-px/.test(window.location.href),a=c?document.referrer:window.location.href;a=/utm_source=/.test(a)||/utm_medium=/.test(a);if(!a){if(c)try{b=decodeURIComponent(firstQuery.referrer)}catch(f){}c="https://partners.etoro.com/aw.aspx?A\x3d2\x26Task\x3dClick\x26TargetUrl\x3dNOREDIRECT\x26referrer\x3d";a="google. msn. bing. live. yahoo. search. yandex. naver. ask. startlap. baidu. aol. virgilio. seznam. mynet. altavista. onet. alltheweb. netscape. lycos. voila. about. alice. kvasir. terra. ekolay. najdi.".split(" ");
+a:{for(var e=b,d=a.length;d--;)if(~e.indexOf(a[d])){console.log("referrer contain: ",a[d]);a=!0;break a}a=!1}a&&(console.log("creating image: ",b),a=new Image(100,200),a.src=c+b)}})();</script></body></html>
